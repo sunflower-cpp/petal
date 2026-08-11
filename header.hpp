@@ -1,13 +1,17 @@
 #if !defined(PETAL_HEADER_HPP)
 #define PETAL_HEADER_HPP
 
+#include <fstream>
 #include <functional>
 #include <iostream>
+#include <istream>
 #include <map>
 #include <memory>
+#include <ostream>
 #include <queue>
 #include <stack>
 #include <string>
+#include <string_view>
 #include <typeinfo>
 #include <unordered_map>
 #include <vector>
@@ -37,6 +41,7 @@ using sf_char_t = char;
 using sf_int_t = int;
 using sf_float_t = float;
 using sf_string_t = std::string;
+using sf_strview_t = std::string_view;
 using sf_bool_t = bool;
 
 template <typename T, typename U = std::allocator<T>>
