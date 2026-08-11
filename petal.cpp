@@ -1,5 +1,1 @@
-#include <iostream>
-
-void say_hello(){
-    std::cout << "Hello, from petal!\n";
-}
+#include "petal.hpp"
