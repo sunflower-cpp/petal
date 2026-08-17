@@ -9,6 +9,7 @@
 #include <memory>
 #include <ostream>
 #include <queue>
+#include <sstream>
 #include <stack>
 #include <string>
 #include <string_view>

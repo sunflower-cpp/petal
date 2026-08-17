@@ -7,16 +7,15 @@ namespace sf
 {
 namespace petal
 {
-class FileView
+class FileReaderView
 {
 private:
   std::fstream f; /* file */
   bool got_eof;
 
 public:
-  FileView (const char *_V)
-      : f{ std::fstream (_V, std::ios::in | std::ios::out | std::ios::trunc) },
-        got_eof{ false }
+  FileReaderView (const char *_V)
+      : f{ std::fstream (_V, std::ios::in | std::ios::out) }, got_eof{ false }
   {
   }
 
@@ -32,6 +31,15 @@ public:
       }
 
     return static_cast<char> (r);
+  }
+
+  inline std::string
+  read_all ()
+  {
+    std::stringstream buf;
+    buf << f.rdbuf ();
+
+    return buf.str ();
   }
 
   inline void
@@ -52,14 +60,14 @@ public:
     return got_eof;
   }
 
-  ~FileView ()
+  ~FileReaderView ()
   {
     if (f)
       f.close ();
   }
 };
 
-using fileview_t = FileView;
+using filereaderview_t = FileReaderView;
 } // namespace petal
 } // namespace sf
 
