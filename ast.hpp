@@ -28,6 +28,12 @@ public:
   explicit stmt_t (StmtType _Type) : type{ _Type } {}
   virtual ~stmt_t () = 0;
   virtual void print () = 0;
+
+  inline StmtType &
+  get_type ()
+  {
+    return type;
+  }
 };
 
 class expr_t
@@ -38,6 +44,12 @@ public:
   explicit expr_t (ExprType _Type) : type{ _Type } {}
   virtual ~expr_t () = 0;
   virtual void print () = 0;
+
+  inline ExprType &
+  get_type ()
+  {
+    return type;
+  }
 };
 } // namespace petal
 } // namespace sf
