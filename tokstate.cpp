@@ -22,6 +22,23 @@ _is_valid_operator (char c)
   return false;
 }
 
+bool
+_is_valid_keyword (char *s)
+{
+  const char *vtoks[] = { "if", "else", "import", "as",    "for", "while",
+                          "do", "try",  "catch",  "class", "fun", NULL };
+
+  size_t i = 0;
+  while (vtoks[i] != NULL)
+    {
+      if (!strcmp (vtoks[i], s))
+        return true;
+      i++;
+    }
+
+  return false;
+}
+
 void
 _make_op (char *r, char f, char *b)
 {
@@ -193,7 +210,10 @@ toksm_t::_next_tok ()
 
       idt[inl] = '\0';
 
-      r = static_cast<token_t *> (new tok_identifier (idt));
+      if (_is_valid_keyword (idt))
+        r = static_cast<token_t *> (new tok_keyword (idt));
+      else
+        r = static_cast<token_t *> (new tok_identifier (idt));
       --rp;
 
       goto end;
