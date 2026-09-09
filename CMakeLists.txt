@@ -9,5 +9,6 @@ add_library(petal
     fileio.hpp fileio.cpp
     tokstate.hpp tokstate.cpp
     token.hpp token.cpp
+    ast.hpp ast.cpp
     petal.hpp petal.cpp)
 
