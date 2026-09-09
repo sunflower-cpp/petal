@@ -40,7 +40,7 @@ using namespace std;
 
 using sf_char_t = char;
 using sf_int_t = int;
-using sf_float_t = float;
+using sf_float_t = double;
 using sf_string_t = std::string;
 using sf_strview_t = std::string_view;
 using sf_bool_t = bool;

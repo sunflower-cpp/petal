@@ -7,5 +7,7 @@ add_subdirectory(tests)
 add_library(petal
     header.hpp
     fileio.hpp fileio.cpp
+    tokstate.hpp tokstate.cpp
+    token.hpp token.cpp
     petal.hpp petal.cpp)
 

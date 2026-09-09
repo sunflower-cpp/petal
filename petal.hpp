@@ -3,5 +3,7 @@
 
 #include "fileio.hpp"
 #include "header.hpp"
+#include "token.hpp"
+#include "tokstate.hpp"
 
 #endif // PETAL_HPP

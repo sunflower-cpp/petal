@@ -31,6 +31,12 @@ public:
   explicit token_t (SfTokenType _Type) : type{ _Type } {}
   virtual ~token_t () = 0;
   virtual inline void print () = 0;
+
+  inline const SfTokenType &
+  get_type ()
+  {
+    return type;
+  }
 };
 
 class tok_string : public token_t
@@ -99,7 +105,7 @@ public:
   inline void
   print () override
   {
-    std::cout << "[tok_float] (v) " << v << '\n';
+    std::cout << "[tok_float] (v) " << std::setprecision (15) << v << '\n';
   }
 };
 
@@ -143,18 +149,18 @@ public:
 
 class tok_space : public token_t
 {
-  sf_string_t v;
+  sf_int_t v;
 
 public:
-  explicit tok_space (sf_string_t _V)
+  explicit tok_space (sf_int_t _V)
       : token_t (SfTokenType::TOKEN_SPACE), v{ _V }
   {
   }
 
   ~tok_space () override {}
 
-  const sf_string_t &
-  get_v () const
+  sf_int_t &
+  get_v ()
   {
     return v;
   }
@@ -268,12 +274,23 @@ public:
   bool
   init () /* start processing tokens */
   {
-    while (token_t *t = _next_tok ())
+    token_t *t = _next_tok ();
+    while (t && t->get_type () != SfTokenType::TOKEN_EOF)
       {
         toks.push_back (t);
+        t = _next_tok ();
       }
 
+    if (t && t->get_type () == SfTokenType::TOKEN_EOF)
+      delete t;
+
     return true;
+  }
+
+  sf_vec_t<token_t *> &
+  get_toks ()
+  {
+    return toks;
   }
 
   ~toksm_t () {}

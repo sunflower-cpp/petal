@@ -1,5 +1,8 @@
-a = 10
-b = 20
+a = true
 
-c = 30
-write (a)
+if a
+    b = 20
+else
+    b = "30'hi'"
+
+write (b)
