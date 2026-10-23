@@ -24,6 +24,10 @@
 #include <cstdlib>
 #include <cstring>
 
+#if !defined(SF_API)
+#define SF_API
+#endif // SF_API
+
 namespace sf
 {
 // we use std:: for now
