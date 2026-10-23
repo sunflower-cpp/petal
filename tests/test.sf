@@ -6,3 +6,4 @@ else
     b = "30'hi'"
 
 write (b)
+a = 20

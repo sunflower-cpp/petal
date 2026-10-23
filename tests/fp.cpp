@@ -1,7 +1,8 @@
 #include "petal.hpp"
 
-int
-main (int argc, char const *argv[])
+#define TEST(X) test##X ()
+
+void TEST (1)
 {
   sf::petal::filereaderview_t ft ("../../tests/test.sf");
 
@@ -19,6 +20,13 @@ main (int argc, char const *argv[])
     {
       i->print ();
     }
+}
 
+void TEST (2) {}
+
+int
+main (int argc, char const *argv[])
+{
+  TEST (1);
   return 0;
 }

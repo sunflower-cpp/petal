@@ -1,6 +1,7 @@
 #if !defined(PETAL_HPP)
 #define PETAL_HPP
 
+#include "ast.hpp"
 #include "fileio.hpp"
 #include "header.hpp"
 #include "token.hpp"
