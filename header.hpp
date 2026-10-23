@@ -49,6 +49,8 @@ template <typename T, typename U = std::allocator<T>>
 using sf_vec_t = std::vector<T, U>;
 template <typename K, typename V, typename U = std::less<K>>
 using sf_map_t = std::map<K, V, U>;
+
+template <class _Tp> using sf_shptr_t = std::shared_ptr<_Tp>;
 #endif // __sf_typedefs
 
 } // namespace sf
