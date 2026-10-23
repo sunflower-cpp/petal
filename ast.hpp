@@ -108,16 +108,25 @@ public:
 
 class stmt_ifblock : public stmt_t
 {
+public:
+  struct elifbody_str
+  {
+    expr_t *c;
+    sf_vec_t<stmt_t *> b;
+  };
+
+private:
   expr_t *cond = nullptr;
   sf_vec_t<stmt_t *> body;
-  /* TODO: elifs */
+  sf_vec_t<elifbody_str> elif_body;
   sf_vec_t<stmt_t *> else_body;
 
 public:
   explicit stmt_ifblock (expr_t *_Cond, sf_vec_t<stmt_t *> _Body,
+                         sf_vec_t<elifbody_str> _ElifBody,
                          sf_vec_t<stmt_t *> _Else_Body)
       : stmt_t (StmtType::STMT_IFBLOCK), cond{ _Cond }, body{ _Body },
-        else_body{ _Else_Body }
+        elif_body{ _ElifBody }, else_body{ _Else_Body }
   {
   }
 
@@ -133,13 +142,56 @@ public:
     else
       std::cout << "(nullptr)\n";
 
-    std::cout << "body: " << body.size ();
+    std::cout << "body: " << body.size () << '\n';
 
     size_t c = 0;
-    for (auto &&i : body)
+    for (stmt_t *&i : body)
       {
         std::cout << "[" << (++c) << "] ";
-        i->print ();
+
+        if (i != nullptr)
+          i->print ();
+        else
+          std::cout << "(stmt_nullptr)\n";
+      }
+
+    std::cout << "elif_body: " << elif_body.size () << '\n';
+
+    c = 0;
+    for (elifbody_str &i : elif_body)
+      {
+        std::cout << "[" << (++c) << "] ";
+
+        std::cout << "cond: ";
+        if (i.c != nullptr)
+          i.c->print ();
+        else
+          std::cout << "(expr_nullptr)\n";
+
+        std::cout << "body: " << i.b.size () << '\n';
+        size_t d = 0;
+        for (stmt_t *&j : i.b)
+          {
+            std::cout << "[" << (++d) << "] ";
+
+            if (j != nullptr)
+              j->print ();
+            else
+              std::cout << "(stmt_nullptr)\n";
+          }
+      }
+
+    std::cout << "else_body: " << else_body.size () << '\n';
+
+    c = 0;
+    for (stmt_t *&i : else_body)
+      {
+        std::cout << "[" << (++c) << "] ";
+
+        if (i != nullptr)
+          i->print ();
+        else
+          std::cout << "(stmt_nullptr)\n";
       }
   }
 
@@ -200,7 +252,12 @@ public:
 
     std::cout << "args: " << args.size () << '\n';
     for (expr_t *&i : args)
-      i->print ();
+      {
+        if (i != nullptr)
+          i->print ();
+        else
+          std::cout << "(expr_nullptr)\n";
+      }
   }
 };
 
@@ -224,7 +281,52 @@ public:
       c->print ();
   }
 
+  Constant *
+  get_c ()
+  {
+    return c;
+  }
+
+  const Constant *
+  get_c () const
+  {
+    return c;
+  }
+
   ~expr_const () {}
+};
+
+class expr_funcall : public expr_t
+{
+  expr_t *name = nullptr;
+  sf_vec_t<expr_t *> args;
+
+public:
+  explicit expr_funcall (expr_t *_Name, sf_vec_t<expr_t *> _Args)
+      : expr_t (ExprType::EXPR_FUNCALL), name{ _Name }, args{ _Args }
+  {
+  }
+
+  void
+  print () override
+  {
+    std::cout << "name: ";
+    if (name == nullptr)
+      std::cout << "nullptr\n";
+    else
+      name->print ();
+
+    std::cout << "args: " << args.size () << '\n';
+    for (expr_t *&i : args)
+      {
+        if (i != nullptr)
+          i->print ();
+        else
+          std::cout << "(expr_nullptr)\n";
+      }
+  }
+
+  ~expr_funcall () {}
 };
 } // namespace petal
 } // namespace sf
