@@ -28,6 +28,37 @@
 #define SF_API
 #endif // SF_API
 
+#define here printf ("%s: %d (%s)\n", __FILE__, __LINE__, __FUNCTION__)
+
+/**
+ * some env specs which
+ * might help in the future
+ */
+#if !defined(__sf_env_type_prod)
+#define __sf_env_type_prod 1
+#endif
+
+#if !defined(__sf_env_type_prod)
+#define __sf_env_type_debug 2
+#endif
+
+#if !defined(__SF_ENV_TYPE)
+#define __SF_ENV_TYPE __sf_env_type_debug
+#endif
+
+#if !defined(dbg)
+#if __SF_ENV_TYPE == __sf_env_type_debug
+#define dbg(X)                                                                \
+  {                                                                           \
+    printf ("[DEBUG] ");                                                      \
+    here;                                                                     \
+    X;                                                                        \
+  }
+#else
+#define dbg(X) X
+#endif
+#endif
+
 namespace sf
 {
 // we use std:: for now

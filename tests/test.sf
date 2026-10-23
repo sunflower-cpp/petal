@@ -1,9 +1,4 @@
-a = true
-
-if a
-    b = 20
-else
-    b = "30'hi'"
-
-write (b)
-a = 20
+a = 10
+b = "hello"
+c = true
+d = none

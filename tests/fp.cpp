@@ -22,11 +22,34 @@ void TEST (1)
     }
 }
 
-void TEST (2) {}
+void TEST (2)
+{
+  sf::petal::filereaderview_t ft ("../../tests/test.sf");
+
+  std::string s = ft.read_all ();
+
+  std::cout << "Size: " << s.size () << '\n' << s << '\n';
+
+  using namespace sf;
+  petal::toksm_t t (s);
+
+  t.init ();
+
+  std::cout << t.get_toks ().size () << '\n';
+  for (auto &&i : t.get_toks ())
+    {
+      i->print ();
+    }
+
+  sf::petal::astsm_t a (t);
+  a.init ();
+
+  here;
+}
 
 int
 main (int argc, char const *argv[])
 {
-  TEST (1);
+  TEST (2);
   return 0;
 }

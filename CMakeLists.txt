@@ -10,5 +10,7 @@ add_library(petal
     tokstate.hpp tokstate.cpp
     token.hpp token.cpp
     ast.hpp ast.cpp
+    tok2ast.hpp tok2ast.cpp
+    const.hpp const.cpp
     petal.hpp petal.cpp)
 

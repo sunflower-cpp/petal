@@ -4,6 +4,225 @@ namespace sf
 {
 namespace petal
 {
+stmt_t *
+astsm_t::_next_stmt ()
+{
+  token_t *&t = this->t.get_toks ()[c];
+  stmt_t *res = nullptr;
 
+#if __SF_ENV_TYPE == __sf_env_type_debug
+  bool _suppress_nptr_warning = false;
+#endif
+
+  switch (t->get_type ())
+    {
+    case SfTokenType::TOKEN_OPERATOR:
+      {
+        tok_operator *top = static_cast<tok_operator *> (t);
+        const sf_string_t &tv = top->get_v ();
+
+        if (tv == "=")
+          {
+            int cc = c - 1;
+            int gb = 0;
+
+            while (cc >= 0)
+              {
+                token_t *&d = this->t.get_toks ()[cc];
+
+                if (d->get_type () == SfTokenType::TOKEN_OPERATOR)
+                  {
+                    tok_operator *tod = static_cast<tok_operator *> (d);
+                    const sf_string_t &dv = tod->get_v ();
+
+                    if (dv == "(" || dv == "{" || dv == "[")
+                      gb++;
+                    else if (dv == ")" || dv == "}" || dv == "]")
+                      gb--;
+                  }
+                else if (d->get_type () == SfTokenType::TOKEN_NEWLINE && !gb)
+                  break;
+
+                if (!cc)
+                  break;
+                --cc;
+              }
+
+            expr_t *name = _gen_expr (cc, c - 1);
+            cc = c + 1;
+            gb = 0;
+
+            while (cc < this->t.get_toks ().size ())
+              {
+                token_t *&d = this->t.get_toks ()[cc];
+
+                if (d->get_type () == SfTokenType::TOKEN_OPERATOR)
+                  {
+                    tok_operator *tod = static_cast<tok_operator *> (d);
+                    const sf_string_t &dv = tod->get_v ();
+
+                    if (dv == "(" || dv == "{" || dv == "[")
+                      gb++;
+                    else if (dv == ")" || dv == "}" || dv == "]")
+                      gb--;
+                  }
+                else if (d->get_type () == SfTokenType::TOKEN_NEWLINE && !gb)
+                  break;
+
+                if (cc == this->t.get_toks ().size ())
+                  break;
+                ++cc;
+              }
+
+            expr_t *value = _gen_expr (c + 1, cc - 1);
+
+            if (res != nullptr)
+              {
+                delete res;
+                res = nullptr;
+              }
+
+            res = static_cast<stmt_t *> (new stmt_vardecl (name, value));
+            c = cc;
+
+            goto end;
+          }
+      }
+      break;
+
+    default:
+      {
+#if __SF_ENV_TYPE == __sf_env_type_debug
+        _suppress_nptr_warning = true;
+#endif
+      }
+      break;
+    }
+
+  c++;
+
+  /**
+   * NOTE: (important) this label skips the statement `c++;` above
+   * This is intentional behavior; do not change it
+   */
+end:;
+#if __SF_ENV_TYPE == __sf_env_type_debug
+  if (res == nullptr && !_suppress_nptr_warning)
+    dbg (std::cout << "warn: returning nullptr statement\n";);
+#endif
+  return res;
+}
+
+expr_t *
+astsm_t::_gen_expr (size_t j, size_t k)
+{
+  expr_t *res = nullptr;
+
+#if __SF_ENV_TYPE == __sf_env_type_debug
+  bool _suppress_nptr_warning = false;
+#endif
+
+  for (size_t i = j; i <= k; i++)
+    {
+      token_t *&t = this->t.get_toks ()[i];
+
+      switch (t->get_type ())
+        {
+        case SfTokenType::TOKEN_BOOL:
+          {
+            if (res != nullptr)
+              {
+                delete res;
+                res = nullptr;
+              }
+
+            res = static_cast<expr_t *> (
+                new expr_const (static_cast<Constant *> (
+                    new const_bool (static_cast<tok_bool *> (t)->get_v ()))));
+          }
+          break;
+
+        case SfTokenType::TOKEN_INT:
+          {
+            if (res != nullptr)
+              {
+                delete res;
+                res = nullptr;
+              }
+
+            res = static_cast<expr_t *> (
+                new expr_const (static_cast<Constant *> (
+                    new const_int (static_cast<tok_int *> (t)->get_v ()))));
+          }
+          break;
+
+        case SfTokenType::TOKEN_FLOAT:
+          {
+            if (res != nullptr)
+              {
+                delete res;
+                res = nullptr;
+              }
+
+            res = static_cast<expr_t *> (
+                new expr_const (static_cast<Constant *> (new const_float (
+                    static_cast<tok_float *> (t)->get_v ()))));
+          }
+          break;
+
+        case SfTokenType::TOKEN_STRING:
+          {
+            if (res != nullptr)
+              {
+                delete res;
+                res = nullptr;
+              }
+
+            res = static_cast<expr_t *> (
+                new expr_const (static_cast<Constant *> (new const_string (
+                    static_cast<tok_string *> (t)->get_v ()))));
+          }
+          break;
+
+        case SfTokenType::TOKEN_IDENTIFIER:
+          {
+            if (res != nullptr)
+              {
+                delete res;
+                res = nullptr;
+              }
+
+            res = static_cast<expr_t *> (
+                new expr_var (static_cast<tok_identifier *> (t)->get_v ()));
+          }
+          break;
+
+        default:
+#if __SF_ENV_TYPE == __sf_env_type_debug
+          _suppress_nptr_warning = true;
+#endif
+          break;
+        }
+    }
+
+end:;
+#if __SF_ENV_TYPE == __sf_env_type_debug
+  if (res == nullptr && !_suppress_nptr_warning)
+    dbg (std::cout << "warn: returning nullptr expression\n";);
+#endif
+  return res;
+}
+
+void
+astsm_t::init ()
+{
+  while (c < t.get_toks ().size ())
+    {
+      stmt_t *st = _next_stmt ();
+      if (st != nullptr)
+        st->print ();
+      s.push_back (st);
+    }
+}
 } // namespace petal
 } // namespace sf

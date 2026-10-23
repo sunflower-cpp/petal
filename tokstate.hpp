@@ -242,6 +242,20 @@ public:
   }
 };
 
+class tok_none : public token_t
+{
+public:
+  explicit tok_none () : token_t (SfTokenType::TOKEN_NONE) {}
+
+  void
+  print () override
+  {
+    std::cout << "[tok_none]\n";
+  }
+
+  ~tok_none () {}
+};
+
 class toksm_t
 {
 private:

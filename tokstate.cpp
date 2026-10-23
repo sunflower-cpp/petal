@@ -212,6 +212,10 @@ toksm_t::_next_tok ()
 
       if (_is_valid_keyword (idt))
         r = static_cast<token_t *> (new tok_keyword (idt));
+      else if (!strcmp (idt, "true") || !strcmp (idt, "false"))
+        r = static_cast<token_t *> (new tok_bool (idt[0] == 't'));
+      else if (!strcmp (idt, "none"))
+        r = static_cast<token_t *> (new tok_none ());
       else
         r = static_cast<token_t *> (new tok_identifier (idt));
       --rp;

@@ -19,6 +19,7 @@ enum class ExprType
 {
   EXPR_CONST,
   EXPR_FUNCALL,
+  EXPR_VAR,
 };
 
 class stmt_t
@@ -27,7 +28,7 @@ class stmt_t
 
 public:
   explicit stmt_t (StmtType _Type) : type{ _Type } {}
-  virtual ~stmt_t () = 0;
+  virtual ~stmt_t () = default;
   virtual void print () = 0;
 
   inline StmtType &
@@ -43,7 +44,7 @@ class expr_t
 
 public:
   explicit expr_t (ExprType _Type) : type{ _Type } {}
-  virtual ~expr_t () = 0;
+  virtual ~expr_t () = default;
   virtual void print () = 0;
 
   inline ExprType &
@@ -327,6 +328,37 @@ public:
   }
 
   ~expr_funcall () {}
+};
+
+class expr_var : public expr_t
+{
+  sf_string_t n;
+
+public:
+  explicit expr_var (sf_string_t _Name)
+      : expr_t (ExprType::EXPR_VAR), n{ _Name }
+  {
+  }
+
+  sf_string_t &
+  get_n ()
+  {
+    return n;
+  }
+
+  const sf_string_t &
+  get_n () const
+  {
+    return n;
+  }
+
+  void
+  print () override
+  {
+    std::cout << "expr_var: " << n << '\n';
+  }
+
+  ~expr_var () {}
 };
 } // namespace petal
 } // namespace sf

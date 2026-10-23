@@ -13,7 +13,7 @@ namespace petal
 class astsm_t
 {
   toksm_t t;
-  size_t c{ 0 }; /* cursor */
+  int c{ 0 }; /* cursor */
 
   sf_vec_t<stmt_t *> s;
 
@@ -56,13 +56,13 @@ public:
     return t;
   }
 
-  inline size_t &
+  inline int &
   get_c ()
   {
     return c;
   }
 
-  inline const size_t &
+  inline const int &
   get_c () const
   {
     return c;

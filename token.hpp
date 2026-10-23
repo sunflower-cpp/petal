@@ -24,6 +24,7 @@ enum class SfTokenType
   TOKEN_IDENTIFIER = 7,
   TOKEN_KEYWORD = 8,
   TOKEN_BOOL = 9,
+  TOKEN_NONE = 10,
   TOKEN_COUNT,
 };
 } // namespace petal

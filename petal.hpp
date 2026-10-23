@@ -4,6 +4,7 @@
 #include "ast.hpp"
 #include "fileio.hpp"
 #include "header.hpp"
+#include "tok2ast.hpp"
 #include "token.hpp"
 #include "tokstate.hpp"
 
