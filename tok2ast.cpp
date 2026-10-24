@@ -197,6 +197,19 @@ astsm_t::_gen_expr (size_t j, size_t k)
           }
           break;
 
+        case SfTokenType::TOKEN_NONE:
+          {
+            if (res != nullptr)
+              {
+                delete res;
+                res = nullptr;
+              }
+
+            res = static_cast<expr_t *> (
+                new expr_const (static_cast<Constant *> (new const_none ())));
+          }
+          break;
+
         default:
 #if __SF_ENV_TYPE == __sf_env_type_debug
           _suppress_nptr_warning = true;
