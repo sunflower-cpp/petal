@@ -51,6 +51,25 @@ class astsm_t
    */
   expr_t *_get_nextline (int &b);
 
+  /**
+   * get tab/scope count of the current line
+   */
+  int _get_tabspace (int b);
+
+  /**
+   * Instead of having separate routines
+   * for vec<toks> -> vec<stmt>,
+   * we have one routine to directly
+   * get the statements.
+   * this routine is supposed to be big
+   * and hence should be used with caution.
+   * @param b newline token that stars a block
+   * @param t tabspace
+   * @returns vec of statements
+   * @note updates `b` to end-of-loop
+   */
+  sf_vec_t<stmt_t *> _get_block (int &b, int t);
+
 public:
   explicit astsm_t (toksm_t _T) : t{ _T } {};
 

@@ -119,9 +119,23 @@ astsm_t::_next_stmt ()
           {
             c++; // eat 'if'
             expr_t *cond = _get_nextline (c);
+            sf_vec_t<stmt_t *> block = _get_block (c, _get_tabspace (c));
 
-            /* get_block routine required */
-            /* TODO: implement _get_block routine */
+            if (c < this->t.get_toks ().size ()
+                && this->t.get_toks ()[c].is ("keyword:else"))
+              {
+                c++; // eat 'else'
+
+                if (c < this->t.get_toks ().size ()
+                    && this->t.get_toks ()[c].is ("keyword:if"))
+                  {
+                    /* else if block */
+                  }
+                else
+                  {
+                    /* else block */
+                  }
+              }
           }
       }
       break;
@@ -395,6 +409,50 @@ astsm_t::_get_nextline (int &b)
     }
 
   return _gen_expr (bb, b);
+}
+
+int
+astsm_t::_get_tabspace (int b)
+{
+  int t = 0;
+  int gb = 0;
+
+  while (b >= 0)
+    {
+      token_t *d = this->t.get_toks ()[b];
+
+      if (d->get_type () == SfTokenType::TOKEN_OPERATOR)
+        {
+          tok_operator *tod = static_cast<tok_operator *> (d);
+          const sf_string_t &dv = tod->get_v ();
+
+          if (dv == "(" || dv == "{" || dv == "[")
+            gb++;
+          else if (dv == ")" || dv == "}" || dv == "]")
+            gb--;
+        }
+
+      if (d->get_type () == SfTokenType::TOKEN_SPACE && !gb)
+        {
+          t = static_cast<tok_space *> (d)->get_v ();
+          goto end;
+        }
+
+      b--;
+    }
+
+end:;
+  return t;
+}
+
+sf_vec_t<stmt_t *>
+astsm_t::_get_block (int &b, int t)
+{
+  int bb = b;
+  sf_vec_t<stmt_t *> res;
+
+end:;
+  return res;
 }
 } // namespace petal
 } // namespace sf
