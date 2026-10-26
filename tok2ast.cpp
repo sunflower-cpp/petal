@@ -87,11 +87,48 @@ astsm_t::_next_stmt ()
 
             goto end;
           }
+        else if (tv == "(")
+          {
+            /**
+             * many times we need to fetch
+             * the name _before_ the current token
+             * (name is expr_t*)
+             * It is best to create a separate
+             * routine for that
+             */
+            expr_t *name = _get_name (c);
+            sf_vec_t<expr_t *> args = _get_args (c);
+
+            res = static_cast<stmt_t *> (new stmt_funcall (name, args));
+
+            goto end;
+          }
+        else
+          {
+            goto defl;
+          }
+      }
+      break;
+
+    case SfTokenType::TOKEN_KEYWORD:
+      {
+        tok_keyword *tk = static_cast<tok_keyword *> (t);
+        const sf_string_t &sk = tk->get_v ();
+
+        if (sk == "if")
+          {
+            c++; // eat 'if'
+            expr_t *cond = _get_nextline (c);
+
+            /* get_block routine required */
+            /* TODO: implement _get_block routine */
+          }
       }
       break;
 
     default:
       {
+      defl:;
 #if __SF_ENV_TYPE == __sf_env_type_debug
         _suppress_nptr_warning = true;
 #endif
@@ -108,7 +145,9 @@ astsm_t::_next_stmt ()
 end:;
 #if __SF_ENV_TYPE == __sf_env_type_debug
   if (res == nullptr && !_suppress_nptr_warning)
-    dbg (std::cout << "warn: returning nullptr statement\n";);
+    {
+      dbg (std::cout << "warn: returning nullptr statement\n";);
+    }
 #endif
   return res;
 }
@@ -226,6 +265,96 @@ end:;
   return res;
 }
 
+expr_t *
+astsm_t::_get_name (size_t b)
+{
+  if (!b)
+    return nullptr;
+
+  int gb = 0;
+  int bb = static_cast<int> (b - 1);
+
+  while (bb >= 0)
+    {
+      token_t *d = this->t.get_toks ()[bb];
+
+      if (d->get_type () == SfTokenType::TOKEN_OPERATOR)
+        {
+          tok_operator *tod = static_cast<tok_operator *> (d);
+          const sf_string_t &dv = tod->get_v ();
+
+          if (dv == "(" || dv == "{" || dv == "[")
+            gb++;
+          else if (dv == ")" || dv == "}" || dv == "]")
+            gb--;
+        }
+      else if (d->get_type () == SfTokenType::TOKEN_NEWLINE && !gb)
+        break;
+
+      --bb;
+    }
+
+  /* this should be unsafe */
+  return _gen_expr (static_cast<size_t> (bb), b - 1);
+}
+
+sf_vec_t<expr_t *>
+astsm_t::_get_args (int &b)
+{
+  b++; // eat '('
+  sf_vec_t<expr_t *> res;
+
+  int gb = 0;
+  int lp = static_cast<int> (b);
+
+  while (b < this->t.get_toks ().size ())
+    {
+      token_t *d = this->t.get_toks ()[b];
+
+      if (d->get_type () == SfTokenType::TOKEN_OPERATOR)
+        {
+          tok_operator *tod = static_cast<tok_operator *> (d);
+          const sf_string_t &dv = tod->get_v ();
+
+          if (dv == ")" && !gb)
+            {
+              res.push_back (_gen_expr (lp, b - 1));
+              break;
+            }
+
+          if (dv == "(" || dv == "{" || dv == "[")
+            gb++;
+          else if (dv == ")" || dv == "}" || dv == "]")
+            gb--;
+
+          if (dv == "," && !gb)
+            {
+              if (lp == b)
+                {
+                  if (b + 1 < this->t.get_toks ().size ()
+                      && this->t.get_toks ()[b + 1]->get_type ()
+                             == SfTokenType::TOKEN_OPERATOR
+                      && static_cast<tok_operator *> (
+                             this->t.get_toks ()[b + 1])
+                                 ->get_v ()
+                             == ")")
+                    break;
+
+                  throw sf_string_t ("syntax error");
+                }
+
+              res.push_back (_gen_expr (lp, b - 1));
+              lp = b + 1;
+            }
+        }
+
+      b++;
+    }
+
+end:;
+  return res;
+}
+
 void
 astsm_t::init ()
 {
@@ -236,6 +365,36 @@ astsm_t::init ()
         st->print ();
       s.push_back (st);
     }
+}
+
+expr_t *
+astsm_t::_get_nextline (int &b)
+{
+  int bb = static_cast<int> (b);
+  int gb = 0;
+
+  while (b < this->t.get_toks ().size ())
+    {
+      token_t *d = this->t.get_toks ()[b];
+
+      if (d->get_type () == SfTokenType::TOKEN_OPERATOR)
+        {
+          tok_operator *tod = static_cast<tok_operator *> (d);
+          const sf_string_t &dv = tod->get_v ();
+
+          if (dv == "(" || dv == "{" || dv == "[")
+            gb++;
+          else if (dv == ")" || dv == "}" || dv == "]")
+            gb--;
+        }
+
+      if (d->get_type () == SfTokenType::TOKEN_NEWLINE && !gb)
+        break;
+
+      b++;
+    }
+
+  return _gen_expr (bb, b);
 }
 } // namespace petal
 } // namespace sf

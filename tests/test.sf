@@ -3,3 +3,10 @@ b = "hello"
 c = true
 d = none
 e = 20
+
+if a
+    write ("a is true")
+else if b
+    write ("b is true")
+else
+    write ("nothing is true")

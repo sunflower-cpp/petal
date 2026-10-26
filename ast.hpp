@@ -220,6 +220,18 @@ public:
     return body;
   }
 
+  sf_vec_t<elifbody_str> &
+  get_elifbody ()
+  {
+    return elif_body;
+  }
+
+  const sf_vec_t<elifbody_str> &
+  get_elifbody () const
+  {
+    return elif_body;
+  }
+
   sf_vec_t<stmt_t *> &
   get_else_body ()
   {
@@ -239,13 +251,41 @@ class stmt_funcall : public stmt_t
   sf_vec_t<expr_t *> args;
 
 public:
-  explicit stmt_funcall () : stmt_t (StmtType::STMT_FUNCALL) {}
+  explicit stmt_funcall (expr_t *_Name, sf_vec_t<expr_t *> _Args)
+      : stmt_t (StmtType::STMT_FUNCALL), name{ _Name }, args{ _Args }
+  {
+  }
+
   ~stmt_funcall () {}
+
+  inline expr_t *&
+  get_name ()
+  {
+    return name;
+  }
+
+  inline expr_t *const &
+  get_name () const
+  {
+    return name;
+  }
+
+  inline sf_vec_t<expr_t *> &
+  get_args ()
+  {
+    return args;
+  }
+
+  inline const sf_vec_t<expr_t *> &
+  get_args () const
+  {
+    return args;
+  }
 
   void
   print () override
   {
-    std::cout << "name: ";
+    std::cout << "funcall:\nname: ";
     if (name == nullptr)
       std::cout << "(nullptr)";
     else

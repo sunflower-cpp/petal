@@ -29,6 +29,28 @@ class astsm_t
    */
   expr_t *_gen_expr (size_t i, size_t j);
 
+  /* utility functions */
+
+  /**
+   * gets the name just before token at `b`
+   * assumes token at `b` is '('
+   * @returns name as an expression on success, nullptr otherwise
+   */
+  expr_t *_get_name (size_t b);
+
+  /**
+   * gets the arglist, assumes token at b is `(`
+   * @returns vector of arguments on success
+   */
+  sf_vec_t<expr_t *> _get_args (int &b);
+
+  /**
+   * get the entire expression by scanning
+   * tokens till the end of line (bracket matched)
+   * @returns expression on successful pass, nullptr otherwise
+   */
+  expr_t *_get_nextline (int &b);
+
 public:
   explicit astsm_t (toksm_t _T) : t{ _T } {};
 

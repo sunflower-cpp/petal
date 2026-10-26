@@ -208,6 +208,12 @@ public:
 
   ~tok_keyword () override {}
 
+  sf_string_t &
+  get_v ()
+  {
+    return v;
+  }
+
   const sf_string_t &
   get_v () const
   {
