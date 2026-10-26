@@ -79,6 +79,9 @@ using sf_float_t = double;
 using sf_string_t = std::string;
 using sf_strview_t = std::string_view;
 using sf_bool_t = bool;
+using sf_sv_t = std::string_view;
+
+template <typename T, typename U> using sf_pair_t = std::pair<T, U>;
 
 template <typename T, typename U = std::allocator<T>>
 using sf_vec_t = std::vector<T, U>;

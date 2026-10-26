@@ -122,12 +122,12 @@ astsm_t::_next_stmt ()
             sf_vec_t<stmt_t *> block = _get_block (c, _get_tabspace (c));
 
             if (c < this->t.get_toks ().size ()
-                && this->t.get_toks ()[c].is ("keyword:else"))
+                && this->t.get_toks ()[c]->is ("keyword:else"))
               {
                 c++; // eat 'else'
 
                 if (c < this->t.get_toks ().size ()
-                    && this->t.get_toks ()[c].is ("keyword:if"))
+                    && this->t.get_toks ()[c]->is ("keyword:if"))
                   {
                     /* else if block */
                   }

@@ -23,6 +23,8 @@ public:
   {
     return type;
   }
+
+  bool is (const sf_sv_t);
 };
 
 class tok_string : public token_t

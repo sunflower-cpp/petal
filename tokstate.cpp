@@ -302,5 +302,91 @@ end:
 }
 
 token_t::~token_t () {}
+
+bool
+token_t::is (const sf_sv_t s)
+{
+  size_t c = s.find (':'); /* colon is mandatory, fail if not found */
+
+  if (c == std::string_view::npos)
+    return false;
+
+  const sf_strview_t h1 = s.substr (0, c);
+  const sf_strview_t h2 = s.substr (c + 1);
+
+  const sf_pair_t<sf_strview_t, SfTokenType> ktp[]
+      = { { "keyword", SfTokenType::TOKEN_KEYWORD },
+          { "identifier", SfTokenType::TOKEN_IDENTIFIER },
+          { "string", SfTokenType::TOKEN_STRING },
+          { "int", SfTokenType::TOKEN_INT },
+          { "float", SfTokenType::TOKEN_FLOAT },
+          { "bool", SfTokenType::TOKEN_BOOL },
+          { "none", SfTokenType::TOKEN_NONE },
+          { "operator", SfTokenType::TOKEN_OPERATOR },
+          { "newline", SfTokenType::TOKEN_NEWLINE },
+          { "space", SfTokenType::TOKEN_SPACE },
+          { "eof", SfTokenType::TOKEN_EOF } };
+
+  for (auto &&i : ktp)
+    {
+      if (i.first == h1)
+        {
+          if (get_type () != i.second)
+            return false;
+
+          if (h1 == "keyword")
+            {
+              return static_cast<tok_keyword *> (this)->get_v () == h2;
+            }
+          else if (h1 == "identifier")
+            {
+              return static_cast<tok_identifier *> (this)->get_v () == h2;
+            }
+          else if (h1 == "string")
+            {
+              return static_cast<tok_string *> (this)->get_v () == h2;
+            }
+          else if (h1 == "int")
+            {
+              const sf_string_t value (h2);
+              return static_cast<tok_int *> (this)->get_v ()
+                     == atoi (value.c_str ());
+            }
+          else if (h1 == "float")
+            {
+              const sf_string_t value (h2);
+              return static_cast<tok_float *> (this)->get_v ()
+                     == atof (value.c_str ());
+            }
+          else if (h1 == "bool")
+            {
+              if (h2 == "true")
+                return static_cast<tok_bool *> (this)->get_v ();
+              if (h2 == "false")
+                return !static_cast<tok_bool *> (this)->get_v ();
+              return false;
+            }
+          else if (h1 == "none" || h1 == "newline" || h1 == "eof")
+            return h2.empty () || (h2 == ";");
+          else if (h1 == "operator")
+            {
+              return static_cast<tok_operator *> (this)->get_v () == h2;
+            }
+          else if (h1 == "space")
+            {
+              if (h2 == "*" || h2 == ";")
+                return true;
+
+              const sf_string_t value (h2);
+              return static_cast<tok_space *> (this)->get_v ()
+                     == atoi (value.c_str ());
+            }
+
+          break;
+        }
+    }
+
+  return false;
+}
 } // namespace petal
 } // namespace sf
